@@ -112,7 +112,10 @@ class _ContactListPageState extends State<ContactListPage> {
               children: [
                 for (int i = 0; i < _danhBa.length; i++)
                   ListTile(
-                    leading: CircleAvatar(child: Text(_danhBa[i].hoTen[0])),
+                    leading: Hero(
+                     tag: _danhBa[i].dienThoai, // Lấy SĐT làm thẻ tag duy nhất
+                    child: CircleAvatar(child: Text(_danhBa[i].hoTen[0])),
+                    ),
                     title: Text(_danhBa[i].hoTen),
                     subtitle: Text(_danhBa[i].dienThoai),
                     trailing: const Icon(Icons.chevron_right),
@@ -143,6 +146,18 @@ class ContactDetailPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            // Thêm khối Hero này vào đầu Column
+            Center(
+              child: Hero(
+                tag: contact.dienThoai, // Tag phải khớp y hệt bên kia
+                child: CircleAvatar(
+                  radius: 40,
+                  child: Text(contact.hoTen[0], style: const TextStyle(fontSize: 32)),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            
             _dong(Icons.person, 'Họ tên', contact.hoTen),
             _dong(Icons.phone, 'Điện thoại', contact.dienThoai),
             _dong(Icons.email, 'Email', contact.email.isEmpty ? '(chưa có)' : contact.email),
@@ -307,8 +322,8 @@ class AboutPage extends StatelessWidget {
         child: Padding(
           padding: EdgeInsets.all(24),
           child: Text(
-            // TODO: Nhớ đổi dòng này thành Tên và MSSV của bạn
-            'Lab F4 – Điều hướng đa màn hình\nNguyễn Văn A – 231A290127',
+           
+            'Lab F4 – Điều hướng đa màn hình\n Bùi Quang Duy – 231A290127',
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 18),
           ),
