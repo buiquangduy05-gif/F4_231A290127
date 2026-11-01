@@ -97,9 +97,28 @@ class _ContactListPageState extends State<ContactListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+    appBar: AppBar(
         title: const Text('Danh bạ mini'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () async {
+              final chon = await Navigator.push<Contact>(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ContactSearchPage(danhBa: _danhBa),
+                ),
+              );
+              if (chon != null && context.mounted) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ContactDetailPage(contact: chon),
+                  ),
+                );
+              }
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.info_outline),
             onPressed: () => Navigator.pushNamed(context, AboutPage.routeName),
@@ -329,6 +348,57 @@ class AboutPage extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+// ================= MÀN HÌNH TÌM KIẾM (NC1) =================
+class ContactSearchPage extends StatefulWidget {
+  final List<Contact> danhBa;
+  const ContactSearchPage({super.key, required this.danhBa});
+
+  @override
+  State<ContactSearchPage> createState() => _ContactSearchPageState();
+}
+
+class _ContactSearchPageState extends State<ContactSearchPage> {
+  String _tuKhoa = '';
+
+  @override
+  Widget build(BuildContext context) {
+    final ketQua = widget.danhBa.where((c) =>
+        c.hoTen.toLowerCase().contains(_tuKhoa.toLowerCase()) ||
+        c.dienThoai.contains(_tuKhoa)).toList();
+
+    return Scaffold(
+      appBar: AppBar(
+        title: TextField(
+          autofocus: true,
+          decoration: const InputDecoration(
+            hintText: 'Tìm theo tên hoặc số...',
+            border: InputBorder.none,
+          ),
+          onChanged: (value) => setState(() => _tuKhoa = value),
+        ),
+      ),
+      body: ketQua.isEmpty
+          ? const Center(child: Text('Không tìm thấy liên hệ nào'))
+          : ListView.builder(
+              itemCount: ketQua.length,
+              itemBuilder: (context, index) {
+                final c = ketQua[index];
+                return ListTile(
+                  leading: Hero(
+                    tag: '${c.dienThoai}_search',
+                    child: CircleAvatar(child: Text(c.hoTen[0])),
+                  ),
+                  title: Text(c.hoTen),
+                  subtitle: Text(c.dienThoai),
+                  onTap: () {
+                    Navigator.pop(context, c);
+                  },
+                );
+              },
+            ),
     );
   }
 }
